@@ -14,7 +14,7 @@ api_key = os.getenv("GEMINI_API_KEY")
 
 client = genai.Client(api_key=api_key) if api_key else None
 
-MODEL = "gemini-3.5-flash"
+MODEL = "gemini-3.8-flash"
 
 SYSTEM_PROMPTS = {
     "chat": """
