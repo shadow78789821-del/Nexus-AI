@@ -1,18 +1,53 @@
-
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import re
+from google import genai
 
 app = Flask(__name__)
 
-CORS(app, origins=["https://project-nexus-ai.netlify.app"])
+CORS(app, origins=[
+    "https://project-nexus-ai.netlify.app"
+])
+
+# Connect Gemini using Render environment variable
+api_key = os.getenv("GEMINI_API_KEY")
+
+client = genai.Client(api_key=api_key) if api_key else None
+
+MODEL = "gemini-2.5-flash"
+
+SYSTEM_PROMPTS = {
+    "chat": """
+You are Nexus AI, a friendly and intelligent AI assistant.
+Answer questions accurately and clearly.
+Solve maths step by step when asked.
+You can understand English, Urdu and Hindi.
+""",
+
+    "summarize": """
+Summarize the user's text into clear, organized notes.
+Preserve important facts and do not invent information.
+""",
+
+    "study": """
+You are a patient study tutor.
+Explain topics in beginner-friendly language.
+Give examples and finish with a short recap.
+""",
+
+    "quiz": """
+Create a quiz with 5 multiple-choice questions.
+Give four options for each question.
+Include the correct answers and explanations at the end.
+"""
+}
 
 
 @app.get("/")
 def home():
     return jsonify({
         "status": "online",
-        "message": "Nexus AI Free Demo is running!"
+        "message": "Nexus AI Gemini backend is running!"
     })
 
 
@@ -23,62 +58,46 @@ def health():
 
 @app.post("/api/ask")
 def ask():
+
     data = request.get_json(silent=True) or {}
 
     mode = data.get("mode", "chat")
     prompt = (data.get("prompt") or "").strip()
 
-    if not prompt:
-        return jsonify({"error": "Please enter something."}), 400
-
-    if mode not in ["chat", "summarize", "study", "quiz"]:
+    if mode not in SYSTEM_PROMPTS:
         return jsonify({"error": "Unknown tool selected."}), 400
 
-    if mode == "chat":
-        answer = (
-            "Welcome to Nexus AI Free Demo!\n\n"
-            "You asked: " + prompt + "\n\n"
-            "This is a demonstration response. "
-            "The free demo does not use a real AI model. "
-            "It shows how the Nexus AI chat interface works."
+    if not prompt:
+        return jsonify({"error": "Please enter a question."}), 400
+
+    if len(prompt) > 20000:
+        return jsonify({"error": "Input is too long."}), 400
+
+    if client is None:
+        return jsonify({
+            "error": "Gemini API key is missing in Render."
+        }), 503
+
+    try:
+        response = client.models.generate_content(
+            model=MODEL,
+            contents=(
+                SYSTEM_PROMPTS[mode]
+                + "\n\nUser request:\n"
+                + prompt
+            )
         )
 
-    elif mode == "summarize":
-        sentences = re.split(r'(?<=[.!?])\s+', prompt)
-        summary = " ".join(sentences[:3])
+        answer = response.text or "Please try again."
 
-        answer = (
-            "DEMO SUMMARY\n\n"
-            + summary[:1000]
-            + "\n\nThis is a basic demo summary, not an AI-generated summary."
-        )
+        return jsonify({"answer": answer})
 
-    elif mode == "study":
-        answer = (
-            "NEXUS AI STUDY ASSISTANT\n\n"
-            "Topic: " + prompt + "\n\n"
-            "1. Start by understanding the basic definition.\n"
-            "2. Break the topic into smaller parts.\n"
-            "3. Learn one example for each part.\n"
-            "4. Revise the important points.\n\n"
-            "This is a sample study guide in Free Demo Mode."
-        )
+    except Exception as exc:
+        app.logger.exception("Gemini API request failed")
 
-    else:
-        answer = (
-            "NEXUS AI QUIZ GENERATOR\n\n"
-            "Topic: " + prompt + "\n\n"
-            "1. What is the main idea of this topic?\n"
-            "A) Option A\nB) Option B\nC) Option C\nD) Option D\n\n"
-            "2. Why is this topic important?\n"
-            "A) Option A\nB) Option B\nC) Option C\nD) Option D\n\n"
-            "3. Which statement best describes this topic?\n"
-            "A) Option A\nB) Option B\nC) Option C\nD) Option D\n\n"
-            "Demo answer key: Sample questions only. "
-            "These questions are not generated from the topic."
-        )
-
-    return jsonify({"answer": answer})
+        return jsonify({
+            "error": "Gemini request failed. Check API key, model availability and free-tier limits."
+        }), 502
 
 
 if __name__ == "__main__":
