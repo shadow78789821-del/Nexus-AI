@@ -1,137 +1,85 @@
-import os
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from dotenv import load_dotenv
-from openai import OpenAI
-
-# Load environment variables
-load_dotenv()
+import re
 
 app = Flask(__name__)
 
-# Allow your Netlify website to connect
-CORS(app, origins=[
-    "https://project-nexus-ai.netlify.app"
-])
-
-# Connect OpenAI API
-api_key = os.getenv("OPENAI_API_KEY")
-
-client = OpenAI(api_key=api_key) if api_key else None
+CORS(app, origins=["https://project-nexus-ai.netlify.app"])
 
 
-# Instructions for each AI tool
-SYSTEM_PROMPTS = {
-    "chat": (
-        "You are Nexus AI, a helpful and friendly assistant. "
-        "Give accurate and clear answers. If you are unsure, say so."
-    ),
-
-    "summarize": (
-        "Summarize the user's text into concise, well-organized notes. "
-        "Preserve important facts and never invent information."
-    ),
-
-    "study": (
-        "You are a patient study tutor. Explain topics in beginner-friendly "
-        "language, use simple examples, and end with a short recap."
-    ),
-
-    "quiz": (
-        "Create a quiz about the user's topic. Include 5 multiple-choice "
-        "questions with four options each, followed by an answer key "
-        "with brief explanations."
-    )
-}
-
-
-# Backend home page
 @app.get("/")
 def home():
     return jsonify({
         "status": "online",
-        "message": "Nexus AI backend is running!"
+        "message": "Nexus AI Free Demo is running!"
     })
 
 
-# Health check
 @app.get("/health")
 def health():
-    return jsonify({
-        "status": "ok"
-    })
+    return jsonify({"status": "ok"})
 
 
-# AI request endpoint
 @app.post("/api/ask")
 def ask():
-
     data = request.get_json(silent=True) or {}
 
     mode = data.get("mode", "chat")
     prompt = (data.get("prompt") or "").strip()
 
-    if mode not in SYSTEM_PROMPTS:
-        return jsonify({
-            "error": "Unknown tool selected."
-        }), 400
-
     if not prompt:
-        return jsonify({
-            "error": "Please enter a question or some text."
-        }), 400
+        return jsonify({"error": "Please enter something."}), 400
 
-    if len(prompt) > 20000:
-        return jsonify({
-            "error": "Please keep your input under 20,000 characters."
-        }), 400
+    if mode not in ["chat", "summarize", "study", "quiz"]:
+        return jsonify({"error": "Unknown tool selected."}), 400
 
-    if client is None:
-        return jsonify({
-            "error": "AI is not connected. Please configure OPENAI_API_KEY in Render."
-        }), 503
-
-    try:
-
-        result = client.chat.completions.create(
-            model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
-
-            messages=[
-                {
-                    "role": "system",
-                    "content": SYSTEM_PROMPTS[mode]
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ],
-
-            temperature=0.7
+    if mode == "chat":
+        answer = (
+            "Welcome to Nexus AI Free Demo!\n\n"
+            "You asked: " + prompt + "\n\n"
+            "This is a demonstration response. "
+            "The free demo does not use a real AI model. "
+            "It shows how the Nexus AI chat interface works."
         )
+
+    elif mode == "summarize":
+        sentences = re.split(r'(?<=[.!?])\s+', prompt)
+        summary = " ".join(sentences[:3])
 
         answer = (
-            result.choices[0].message.content
-            or "I couldn't generate a response. Please try again."
+            "DEMO SUMMARY\n\n"
+            + summary[:1000]
+            + "\n\nThis is a basic demo summary, not an AI-generated summary."
         )
 
-        return jsonify({
-            "answer": answer
-        })
+    elif mode == "study":
+        answer = (
+            "NEXUS AI STUDY ASSISTANT\n\n"
+            "Topic: " + prompt + "\n\n"
+            "1. Start by understanding the basic definition.\n"
+            "2. Break the topic into smaller parts.\n"
+            "3. Learn one example for each part.\n"
+            "4. Revise the important points.\n\n"
+            "This is a sample study guide in Free Demo Mode."
+        )
 
-    except Exception:
+    else:
+        answer = (
+            "NEXUS AI QUIZ GENERATOR\n\n"
+            "Topic: " + prompt + "\n\n"
+            "1. What is the main idea of this topic?\n"
+            "A) Option A\nB) Option B\nC) Option C\nD) Option D\n\n"
+            "2. Why is this topic important?\n"
+            "A) Option A\nB) Option B\nC) Option C\nD) Option D\n\n"
+            "3. Which statement best describes this topic?\n"
+            "A) Option A\nB) Option B\nC) Option C\nD) Option D\n\n"
+            "Demo answer key: Sample questions only. "
+            "These questions are not generated from the topic."
+        )
 
-        app.logger.exception("AI request failed")
-
-        return jsonify({
-            "error": "The AI request failed. Check your API key and model settings."
-        }), 502
+    return jsonify({"answer": answer})
 
 
-# Run the application
 if __name__ == "__main__":
-    app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=False
-    )
+    app.run(host="0.0.0.0", port=5000)
