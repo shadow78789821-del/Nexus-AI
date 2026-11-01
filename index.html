@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Nexus AI — your personal AI workspace for learning and productivity.">
+  <title>Nexus AI — Your Personal AI Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="Nexus AI home"><span class="brand-mark">✳</span><span>NEXUS<span class="brand-accent">AI</span></span></a>
+    <nav class="desktop-nav"><a href="#home" class="nav-link active">Home</a><a href="#tools" class="nav-link">AI Tools</a><a href="#about" class="nav-link">About</a></nav>
+    <button class="top-cta" data-open-tool="chat">Try Nexus AI <span>↗</span></button>
+    <button class="mobile-menu" id="mobileMenu" aria-label="Open menu">☰</button>
+  </header>
+
+  <main>
+    <section class="hero section-wrap" id="home">
+      <div class="hero-copy">
+        <div class="eyebrow"><span class="pulse"></span> YOUR PERSONAL AI WORKSPACE</div>
+        <h1>Make your ideas<br> <span class="gradient-text">go further.</span></h1>
+        <p class="hero-description">One thoughtful space to ask questions, understand complex topics, summarize notes and study smarter — powered by AI.</p>
+        <div class="hero-actions"><button class="button button-primary" data-open-tool="chat">Start chatting <span>→</span></button><a class="text-link" href="#tools">Explore the tools <span>↓</span></a></div>
+        <div class="trust-row"><div class="avatar-stack"><i>✦</i><i>✧</i><i>✳</i></div><span>Built for curious minds and lifelong learners</span></div>
+      </div>
+      <div class="hero-visual">
+        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+        <div class="spark spark-a">✦</div><div class="spark spark-b">✧</div>
+        <div class="preview-card">
+          <div class="preview-top"><div class="window-dots"><b></b><b></b><b></b></div><span>nexus workspace</span><span class="online"><i></i> READY</span></div>
+          <div class="preview-body">
+            <div class="assistant-avatar">✳</div>
+            <div><div class="tiny-label">NEXUS AI</div><h3>Hey there. What are we learning today?</h3><p>I'm ready to help you turn a big question into a clear answer.</p></div>
+          </div>
+          <div class="suggestion-list"><div><span>✦</span> Explain a difficult concept <b>↗</b></div><div><span>▤</span> Summarize my study notes <b>↗</b></div><div><span>◎</span> Make me a practice quiz <b>↗</b></div></div>
+          <div class="fake-input"><span>Ask Nexus anything...</span><button aria-hidden="true">↑</button></div>
+        </div>
+        <div class="floating-chip chip-top"><span>✦</span> Ideas, made clearer</div>
+        <div class="floating-chip chip-bottom"><span class="chip-dot"></span> Your study sidekick</div>
+      </div>
+    </section>
+
+    <section class="tools-section section-wrap" id="tools">
+      <div class="section-heading"><div class="eyebrow">A TOOL FOR EVERY THOUGHT</div><h2>Meet your new <span class="gradient-text">superpowers.</span></h2><p>Choose a tool and let’s get something done.</p></div>
+      <div class="tool-grid">
+        <button class="tool-card" data-open-tool="chat"><span class="tool-icon violet">✳</span><span class="tool-tag">ASK ANYTHING</span><h3>AI Chat</h3><p>Have a conversation, ask questions and explore ideas with your AI assistant.</p><span class="card-link">Open chat <b>↗</b></span></button>
+        <button class="tool-card" data-open-tool="summarize"><span class="tool-icon blue">≋</span><span class="tool-tag">SAVE YOUR TIME</span><h3>Text Summarizer</h3><p>Turn long paragraphs and study notes into clear, useful summaries.</p><span class="card-link">Summarize text <b>↗</b></span></button>
+        <button class="tool-card" data-open-tool="study"><span class="tool-icon mint">⌘</span><span class="tool-tag">LEARN WITH EASE</span><h3>Study Assistant</h3><p>Break down difficult topics into simple explanations and examples.</p><span class="card-link">Start learning <b>↗</b></span></button>
+        <button class="tool-card" data-open-tool="quiz"><span class="tool-icon amber">◇</span><span class="tool-tag">TEST YOURSELF</span><h3>Quiz Generator</h3><p>Create practice questions from any subject or topic you are studying.</p><span class="card-link">Create a quiz <b>↗</b></span></button>
+      </div>
+    </section>
+
+    <section class="about-section section-wrap" id="about">
+      <div class="about-panel"><div class="about-symbol">✳</div><div><div class="eyebrow">BUILT FOR BETTER THINKING</div><h2>Technology should make learning <span class="gradient-text">feel simpler.</span></h2><p>Nexus AI brings helpful AI-powered study and productivity tools together in one friendly workspace. Use it to explore, practice and keep moving forward.</p></div><button class="button button-light" data-open-tool="study">Give it a try <span>→</span></button></div>
+    </section>
+  </main>
+
+  <footer class="footer section-wrap"><a class="brand" href="#"><span class="brand-mark">✳</span><span>NEXUS<span class="brand-accent">AI</span></span></a><span>© 2026 Nexus AI · A student project</span><a href="#home">Back to top ↑</a></footer>
+
+  <div class="modal-backdrop" id="toolModal" aria-hidden="true">
+    <section class="workspace-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header"><a class="brand" href="#"><span class="brand-mark">✳</span><span>NEXUS<span class="brand-accent">AI</span></span></a><button class="icon-button" id="closeModal" aria-label="Close">×</button></div>
+      <div class="workspace-content">
+        <aside class="workspace-sidebar"><div class="sidebar-label">WORKSPACE</div><button class="side-tool selected" data-tool="chat"><span>✳</span> AI Chat</button><button class="side-tool" data-tool="summarize"><span>≋</span> Summarizer</button><button class="side-tool" data-tool="study"><span>⌘</span> Study Assistant</button><button class="side-tool" data-tool="quiz"><span>◇</span> Quiz Generator</button><div class="sidebar-note"><span class="pulse"></span> AI workspace ready</div></aside>
+        <div class="tool-panel">
+          <div class="panel-heading"><div><div class="eyebrow" id="panelEyebrow">YOUR AI COMPANION</div><h2 id="modalTitle">AI Chat</h2><p id="panelDescription">Ask a question and explore an idea.</p></div><span class="model-pill"><i></i> AI ASSISTANT</span></div>
+          <div class="panel-form" id="chatForm">
+            <div class="chat-log" id="chatLog"><div class="message assistant-message"><span class="message-avatar">✳</span><div class="message-bubble"><b>Nexus AI</b><p>Hello! I'm your AI assistant. What would you like to explore today?</p></div></div></div>
+            <form id="chatInputForm" class="chat-input-row"><input id="chatInput" autocomplete="off" placeholder="Ask Nexus anything..." required><button class="send-button" aria-label="Send message">↑</button></form>
+          </div>
+          <div class="panel-form hidden" id="textForm">
+            <label class="field-label" id="textLabel" for="mainText">YOUR TEXT OR TOPIC</label>
+            <textarea id="mainText" rows="8" placeholder="Paste your text or enter a topic here..."></textarea>
+            <div class="form-bottom"><span id="textHint">Tip: Include enough detail for a useful result.</span><button class="button button-primary" id="runTextTool">Generate result <span>→</span></button></div>
+          </div>
+          <div class="result-area hidden" id="resultArea"><div class="result-top"><span>✦ GENERATED RESULT</span><button id="copyResult" class="copy-button">Copy</button></div><div id="resultContent" class="result-content"></div></div>
+          <div class="disclaimer">AI can make mistakes. Check important information before relying on it.</div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="script.js"></script>
+</body>
+</html>
