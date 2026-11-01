@@ -1,4 +1,3 @@
-
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -10,16 +9,18 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Allow Netlify frontend to connect to Render backend
+# Allow your Netlify website to connect
 CORS(app, origins=[
     "https://project-nexus-ai.netlify.app"
 ])
 
-# OpenAI API connection
+# Connect OpenAI API
 api_key = os.getenv("OPENAI_API_KEY")
+
 client = OpenAI(api_key=api_key) if api_key else None
 
-# Instructions for each Nexus AI tool
+
+# Instructions for each AI tool
 SYSTEM_PROMPTS = {
     "chat": (
         "You are Nexus AI, a helpful and friendly assistant. "
@@ -28,7 +29,7 @@ SYSTEM_PROMPTS = {
 
     "summarize": (
         "Summarize the user's text into concise, well-organized notes. "
-        "Preserve important facts and do not invent information."
+        "Preserve important facts and never invent information."
     ),
 
     "study": (
@@ -37,23 +38,23 @@ SYSTEM_PROMPTS = {
     ),
 
     "quiz": (
-        "Create a useful quiz about the user's topic. Include 5 multiple-choice "
+        "Create a quiz about the user's topic. Include 5 multiple-choice "
         "questions with four options each, followed by an answer key "
         "with brief explanations."
     )
 }
 
 
-# Backend homepage
+# Backend home page
 @app.get("/")
 def home():
     return jsonify({
         "status": "online",
-        "message": "Nexus AI backend is running."
+        "message": "Nexus AI backend is running!"
     })
 
 
-# Backend health check
+# Health check
 @app.get("/health")
 def health():
     return jsonify({
@@ -61,7 +62,7 @@ def health():
     })
 
 
-# Main AI endpoint
+# AI request endpoint
 @app.post("/api/ask")
 def ask():
 
@@ -70,13 +71,11 @@ def ask():
     mode = data.get("mode", "chat")
     prompt = (data.get("prompt") or "").strip()
 
-    # Validate selected tool
     if mode not in SYSTEM_PROMPTS:
         return jsonify({
             "error": "Unknown tool selected."
         }), 400
 
-    # Validate user input
     if not prompt:
         return jsonify({
             "error": "Please enter a question or some text."
@@ -87,16 +86,16 @@ def ask():
             "error": "Please keep your input under 20,000 characters."
         }), 400
 
-    # Check API key
     if client is None:
         return jsonify({
             "error": "AI is not connected. Please configure OPENAI_API_KEY in Render."
         }), 503
 
     try:
-        # Send request to OpenAI
+
         result = client.chat.completions.create(
             model=os.getenv("OPENAI_MODEL", "gpt-4o-mini"),
+
             messages=[
                 {
                     "role": "system",
@@ -107,6 +106,7 @@ def ask():
                     "content": prompt
                 }
             ],
+
             temperature=0.7
         )
 
@@ -120,6 +120,7 @@ def ask():
         })
 
     except Exception:
+
         app.logger.exception("AI request failed")
 
         return jsonify({
@@ -127,12 +128,10 @@ def ask():
         }), 502
 
 
-# Run locally
+# Run the application
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
         port=5000,
         debug=False
     )
-
-
